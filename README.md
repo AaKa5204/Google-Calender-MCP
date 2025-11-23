@@ -1,39 +1,75 @@
-# Google Calendar MCP Server
+# Google Calendar & Gmail MCP Server
 
-🤖 An MCP (Model Context Protocol) server that gives AI assistants like Kiro direct access to your Google Calendar.
+🤖 An MCP (Model Context Protocol) server that gives AI assistants like Kiro direct access to your Google Calendar and Gmail.
 
-Ask your AI to check your schedule, create events, find free time, and manage your calendar - all through natural conversation.
+Ask your AI to check your schedule, create events, send emails, manage your inbox - all through natural conversation.
 
 ## ✨ Features
 
+### Calendar Features
 - 📅 **List Events** - View events for today, tomorrow, this week, or custom ranges
-- ➕ **Create Events** - Add new calendar events with details
+- ➕ **Create Events** - Add new calendar events with attendees and optional email invites
 - 🗑️ **Delete Events** - Remove events by ID
 - 🔍 **Search Events** - Find events by keyword
 - 🕐 **Find Free Slots** - Discover available time slots
 
+### Gmail Features
+- 📧 **Send Emails** - Send emails with HTML support, CC, BCC
+- 📬 **List Emails** - Browse inbox, sent, drafts with filters
+- 🔍 **Search Emails** - Advanced email search by sender, subject, date
+- 📖 **Read Emails** - View full email content
+- ✅ **Mark Emails** - Mark as read/unread
+- 🗑️ **Delete Emails** - Trash or permanently delete
+- 💬 **Reply to Emails** - Reply in email threads
+- 📝 **Create Drafts** - Save email drafts
+- 🏷️ **Manage Labels** - Organize emails with labels
+
 ## 🚀 Quick Start
 
-### 1. Clone and Install
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/google-calendar-mcp.git
-cd google-calendar-mcp
-pip install -e .
+git clone https://github.com/AaKa5204/Google-Calender-MCP.git
+cd Google-Calender-MCP
 ```
 
-### 2. Get Google Credentials
+### 2. Install Dependencies
 
-See [SETUP.md](SETUP.md) for detailed instructions on getting Google Calendar API credentials.
+```bash
+# Create virtual environment (recommended)
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-**Quick version:**
+# Install required packages
+pip install -r requirements.txt
+```
+
+### 3. Get Google API Credentials
+
+**Step-by-step:**
+
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create project → Enable Calendar API → Create OAuth credentials
-3. Download and save to `~/.google-calendar-mcp/credentials.json`
+2. Create a new project (or select existing)
+3. Enable APIs:
+   - Go to "APIs & Services" → "Enable APIs and Services"
+   - Search and enable **Google Calendar API**
+   - Search and enable **Gmail API**
+4. Create OAuth credentials:
+   - Go to "APIs & Services" → "Credentials"
+   - Click "Create Credentials" → "OAuth client ID"
+   - Choose "Desktop app" as application type
+   - Download the JSON file
+5. Save credentials:
+   ```bash
+   mkdir -p ~/.google-calendar-mcp
+   cp ~/Downloads/client_secret_*.json ~/.google-calendar-mcp/credentials.json
+   ```
 
-### 3. Configure Kiro
+See [SETUP.md](SETUP.md) for detailed instructions with screenshots.
 
-Add to `.kiro/settings/mcp.json`:
+### 4. Configure Kiro IDE
+
+Add to your `.kiro/settings/mcp.json`:
 
 ```json
 {
@@ -41,97 +77,204 @@ Add to `.kiro/settings/mcp.json`:
     "google-calendar": {
       "command": "python",
       "args": ["-m", "calendar_mcp.server"],
-      "cwd": "/path/to/google-calendar-mcp",
+      "cwd": "/absolute/path/to/Google-Calender-MCP",
       "disabled": false
     }
   }
 }
+
 ```
 
-### 4. Authenticate
+**Important:** Replace `/absolute/path/to/Google-Calender-MCP` with your actual project path.
 
-First use will open your browser to sign in to Google. That's it!
+### 5. Restart MCP Server
 
-## Usage Examples
+1. Open Command Palette in Kiro (Cmd+Shift+P / Ctrl+Shift+P)
+2. Search for "MCP"
+3. Select "Reconnect MCP Server"
 
-### List Today's Events
-```
-You: "Kiro, what's on my calendar today?"
-```
+### 6. Authenticate
 
-### Create an Event
-```
-You: "Kiro, schedule a team meeting tomorrow at 2 PM for 1 hour"
-```
+On first use, a browser window will open asking you to:
+1. Sign in to your Google account
+2. Grant Calendar and Gmail permissions
+3. That's it! The token is saved for future use.
 
-### Find Free Time
-```
-You: "Kiro, when am I free for a 30-minute meeting this week?"
-```
+## 🎯 Usage Examples
 
-### Search Events
+### Calendar Examples
+
+**List Today's Events:**
 ```
-You: "Kiro, find all my dentist appointments"
+You: "What's on my calendar today?"
 ```
 
-### Delete an Event
+**Create an Event:**
 ```
-You: "Kiro, delete the event with ID abc123xyz"
+You: "Schedule a team meeting tomorrow at 2 PM for 1 hour"
 ```
 
-## Tools Available
+**Create Event with Invite:**
+```
+You: "Create a meeting with john@example.com at 3 PM today and send them an invite"
+```
 
-### list_events
+**Find Free Time:**
+```
+You: "When am I free for a 30-minute meeting this week?"
+```
+
+### Gmail Examples
+
+**Send an Email:**
+```
+You: "Send an email to jane@example.com with subject 'Project Update' and tell her the project is on track"
+```
+
+**Check Inbox:**
+```
+You: "What's in my inbox?"
+```
+
+**Search Emails:**
+```
+You: "Find emails from john@example.com about the budget"
+```
+
+**Read an Email:**
+```
+You: "Read the email with ID abc123xyz"
+```
+
+**Reply to Email:**
+```
+You: "Reply to email abc123xyz and say thanks"
+```
+
+## 📋 Requirements
+
+- Python 3.8 or higher
+- Kiro IDE (or any MCP-compatible client)
+- Google account
+- Google Cloud project with Calendar and Gmail APIs enabled
+
+## 🛠️ Available Tools
+
+### Calendar Tools
+
+#### list_events
 List calendar events for a time range.
-
-**Parameters:**
 - `time_range`: "today", "tomorrow", "this_week", "next_week", or "custom"
 - `max_results`: Maximum events to return (default: 10)
-- `start_date`: For custom range (optional)
-- `end_date`: For custom range (optional)
+- `start_date`, `end_date`: For custom range (optional)
 
-### create_event
+#### create_event
 Create a new calendar event.
-
-**Parameters:**
 - `summary`: Event title (required)
-- `start_time`: Start time (required)
-- `end_time`: End time (required)
+- `start_time`, `end_time`: Event times (required)
 - `description`: Event description (optional)
 - `location`: Event location (optional)
 - `attendees`: List of email addresses (optional)
+- `send_invites`: Send email invitations (default: false)
 
-### delete_event
+#### delete_event
 Delete a calendar event.
-
-**Parameters:**
 - `event_id`: ID of event to delete (required)
 
-### find_free_slots
+#### find_free_slots
 Find available time slots.
-
-**Parameters:**
 - `duration_minutes`: Duration needed (default: 60)
 - `days_ahead`: Days to search (default: 7)
 - `work_hours_only`: Only 9 AM - 5 PM (default: true)
 
-### search_events
+#### search_events
 Search for events by keyword.
-
-**Parameters:**
 - `query`: Search term (required)
 - `max_results`: Max results (default: 10)
 
-## Troubleshooting
+### Gmail Tools
+
+#### send_email
+Send an email via Gmail.
+- `to`: Recipient email (required)
+- `subject`: Email subject (required)
+- `body`: Email body (required)
+- `html`: Whether body is HTML (default: false)
+- `cc`, `bcc`: Additional recipients (optional)
+
+#### list_emails
+List emails from inbox, sent, or drafts.
+- `folder`: "inbox", "sent", "drafts", "all" (default: inbox)
+- `max_results`: Maximum emails (default: 10)
+- `unread_only`: Only unread emails (default: false)
+
+#### search_emails
+Search emails by query.
+- `query`: Search query (e.g., "from:user@example.com", "subject:meeting")
+- `max_results`: Max results (default: 10)
+
+#### read_email
+Read full email content.
+- `email_id`: Email message ID (required)
+
+#### mark_email
+Mark email as read/unread.
+- `email_id`: Email message ID (required)
+- `mark_as`: "read" or "unread" (required)
+
+#### delete_email
+Delete or trash an email.
+- `email_id`: Email message ID (required)
+- `permanent`: Permanently delete vs trash (default: false)
+
+#### reply_to_email
+Reply to an email.
+- `email_id`: Email to reply to (required)
+- `body`: Reply message (required)
+
+#### create_draft
+Create an email draft.
+- `to`: Recipient (required)
+- `subject`: Subject (required)
+- `body`: Body (required)
+
+#### list_labels
+List all Gmail labels/folders.
+
+#### add_label
+Add label to an email.
+- `email_id`: Email message ID (required)
+- `label`: Label name (required)
+
+## 🔧 Troubleshooting
 
 ### "credentials.json not found"
-Make sure you've downloaded OAuth credentials from Google Cloud Console and saved them to `~/.google-calendar-mcp/credentials.json`
+- Download OAuth credentials from Google Cloud Console
+- Save to `~/.google-calendar-mcp/credentials.json`
+- Make sure the path is correct
+
+### "API has not been used in project" or "API is disabled"
+- Go to Google Cloud Console
+- Navigate to "APIs & Services" → "Library"
+- Search and enable both **Google Calendar API** and **Gmail API**
+- Wait a few minutes for changes to propagate
 
 ### "Invalid grant" or "Token expired"
-Delete `~/.google-calendar-mcp/token.json` and re-authenticate
+```bash
+rm ~/.google-calendar-mcp/token.json
+```
+Then restart the MCP server and re-authenticate
+
+### MCP Server not connecting
+- Check that the `cwd` path in mcp.json is correct (absolute path)
+- Verify Python is in your PATH
+- Check MCP server logs in Kiro
+- Try reconnecting: Command Palette → "Reconnect MCP Server"
 
 ### Permission errors
-Ensure the Google Calendar API is enabled in your Google Cloud project
+- Ensure both Calendar and Gmail APIs are enabled in Google Cloud project
+- Check that OAuth consent screen is configured
+- Verify the credentials.json file is valid
 
 ## Security Notes
 
@@ -139,30 +282,36 @@ Ensure the Google Calendar API is enabled in your Google Cloud project
 - The token gives access to your calendar - keep it secure
 - Revoke access anytime from your [Google Account settings](https://myaccount.google.com/permissions)
 
-## Development
+## 📁 Project Structure
 
-Project structure:
 ```
-google-calendar-mcp/
-├── pyproject.toml
-├── README.md
-└── src/
-    └── calendar_mcp/
-        ├── __init__.py
-        ├── server.py      # MCP server implementation
-        └── auth.py        # Google OAuth handling
+Google-Calender-MCP/
+├── src/
+│   └── calendar_mcp/
+│       ├── __init__.py
+│       ├── server.py      # MCP server with all tools
+│       └── auth.py        # Google OAuth authentication
+├── pyproject.toml         # Package configuration
+├── requirements.txt       # Python dependencies
+├── README.md             # This file
+├── SETUP.md              # Detailed setup guide
+├── CONTRIBUTING.md       # Contribution guidelines
+└── test_server.py        # Test script
 ```
 
 ## 🤝 Contributing
 
 Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-Ideas for contributions:
+**Ideas for contributions:**
 - Recurring events support
 - Event updates/modifications
 - Multiple calendar support
+- Email attachments support
 - Better natural language parsing
-- Unit tests
+- Unit tests and integration tests
+- Email templates
+- Calendar sharing features
 
 ## 📝 License
 
